@@ -34,7 +34,7 @@ class AddressCard extends StatelessWidget {
     return Card(
       margin: EdgeInsets.only(bottom: 30),
       elevation: 5,
-      color: AppColorScheme.surface,
+      color: AppColorScheme.primarySurface,
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(

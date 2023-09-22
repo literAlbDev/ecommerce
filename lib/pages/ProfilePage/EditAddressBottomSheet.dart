@@ -15,9 +15,9 @@ class EditAddressBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.7,
-      maxChildSize: 0.7,
-      minChildSize: 0.7,
+      initialChildSize: 1,
+      maxChildSize: 1,
+      minChildSize: 1,
       expand: false,
       builder: (context, scrollController) => SingleChildScrollView(
         child: Padding(

@@ -66,7 +66,7 @@ class _SigninPageState extends State<SigninPage> {
                 ),
                 FilledButton(
                   onPressed:  () {
-                          Navigator.pushNamed(context, "/orders");
+                          Navigator.pushNamed(context, "/home");
                         },
                   child: const Text(
                     "Sign in",

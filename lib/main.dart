@@ -1,4 +1,5 @@
 import 'package:ecommerce/common/AppColorScheme.dart';
+import 'package:ecommerce/pages/HomePage.dart';
 import 'package:ecommerce/pages/OrdersPage.dart';
 import 'package:ecommerce/pages/ProfilePage.dart';
 import 'package:ecommerce/pages/SigninPage.dart';
@@ -15,7 +16,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.width);
     return MaterialApp(
       title: 'ecommerce',
       theme: ThemeData(
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
             background: AppColorScheme.background,
             // Change
             onBackground: Colors.grey,
-            surface: AppColorScheme.surface,
+            surface: AppColorScheme.primarySurface,
             onSurface: AppColorScheme.onSurface),
         appBarTheme: AppBarTheme(
             backgroundColor: Colors.white,
@@ -66,18 +66,22 @@ class MyApp extends StatelessWidget {
           showDragHandle: true,
           dragHandleColor: AppColorScheme.secondary,
         ),
+        listTileTheme: ListTileThemeData(
+          iconColor: AppColorScheme.primary,
+          textColor: AppColorScheme.primary,
+        ),
         useMaterial3: true,
       ),
       routes: {
         '/signin': (context) => SigninPage(),
         '/signup': (context) => SignupPage(),
         '/profile': (context) => ProfilePage(),
-        //'/home': (context) =>  HomePage(),
+        '/home': (context) => HomePage(),
         //'/product': (context) =>  ProductPage(),
         //'/whishlist': (context) =>  WhishlistPage(),
-        '/orders': (context) =>  OrdersPage(),
+        '/orders': (context) => OrdersPage(),
       },
-      home: const SigninPage(),
+      home: const HomePage(),
     );
   }
 }
