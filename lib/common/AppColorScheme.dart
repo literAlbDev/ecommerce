@@ -5,6 +5,7 @@ class AppColorScheme{
   static Color onPrimary = Colors.white;
   static Color secondary = Colors.blue;
   static Color onSecondary = Colors.white;
+  static Color secondarySurface = Colors.blue[100]!;
   static Color background = Colors.white;
   static Color surface = Colors.orange[100]!;
   static Color onSurface = Colors.black;

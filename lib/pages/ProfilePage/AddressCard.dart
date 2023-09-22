@@ -1,5 +1,6 @@
 import 'package:ecommerce/common/AppColorScheme.dart';
 import 'package:ecommerce/common/textwidgets.dart';
+import 'package:ecommerce/pages/ProfilePage/EditAddressBottomSheet.dart';
 import 'package:flutter/material.dart';
 
 class AddressCard extends StatelessWidget {
@@ -62,7 +63,13 @@ class AddressCard extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (context) => EditAddressBottomSheet(),
+                        useSafeArea: true,
+                        isScrollControlled: true);
+                  },
                   icon: Icon(Icons.edit),
                   color: AppColorScheme.secondary,
                   style: IconButton.styleFrom(

@@ -1,6 +1,8 @@
-import 'package:ecommerce/common/AddressCard.dart';
+import 'package:ecommerce/pages/ProfilePage/AddressCard.dart';
 import 'package:ecommerce/common/AppColorScheme.dart';
 import 'package:ecommerce/common/textwidgets.dart';
+import 'package:ecommerce/pages/ProfilePage/AddAddressBottomSheet.dart';
+import 'package:ecommerce/pages/ProfilePage/EditProfileBottomSheet.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -16,15 +18,35 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: SurfaceText("Profile", 5),
+        title: SurfaceText("Profile", 40),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => EditProfileBottomSheet(),
+                useSafeArea: true,
+                isScrollControlled: true,
+              );
+            },
             icon: Icon(Icons.edit),
             iconSize: 35,
             color: AppColorScheme.secondary,
           )
         ],
+      ),
+      floatingActionButton: Builder(
+        builder: (context) => FloatingActionButton(
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              builder: (context) => AddAddressBottomSheet(),
+              useSafeArea: true,
+              isScrollControlled: true,
+            );
+          },
+          child: Icon(Icons.add),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30).copyWith(top: 15),
@@ -45,22 +67,29 @@ class _ProfilePageState extends State<ProfilePage> {
               Row(children: [PrimaryText("addresses:", 25)]),
               Expanded(
                 child: ListView.builder(
-                  itemCount: 100,
+                  itemCount: 5, // change to api value
                   padding: EdgeInsets.all(5),
                   itemBuilder: (context, index) {
                     return AddressCard(
                       firstName: "first ${index}",
+                      // change to api value
                       lastName: "last ${index}",
+                      // change to api value
                       addressLine1: "address line 1 infos ${index}",
+                      // change to api value
                       addressLine2: "address line 2 infos ${index}",
+                      // change to api value
                       country: "Turkey",
+                      // change to api value
                       state: "Istanbul",
+                      // change to api value
                       city: "Basak",
-                      zipCode: "33452",
+                      // change to api value
+                      zipCode: "33452", // change to api value
                     );
                   },
                 ),
-              )
+              ),
             ],
           ),
         ),

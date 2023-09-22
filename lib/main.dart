@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    print(MediaQuery.of(context).size.width);
     return MaterialApp(
       title: 'ecommerce',
       theme: ThemeData(
@@ -54,6 +55,15 @@ class MyApp extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
             ),
           ),
+        ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: AppColorScheme.secondarySurface,
+          foregroundColor: AppColorScheme.secondary,
+        ),
+        bottomSheetTheme: BottomSheetThemeData(
+          backgroundColor: AppColorScheme.background,
+          showDragHandle: true,
+          dragHandleColor: AppColorScheme.secondary,
         ),
         useMaterial3: true,
       ),

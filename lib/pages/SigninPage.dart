@@ -12,8 +12,6 @@ class SigninPage extends StatefulWidget {
 class _SigninPageState extends State<SigninPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool loading = false;
-  bool _passwordHidden = true;
 
   @override
   Widget build(BuildContext context) {
@@ -50,19 +48,15 @@ class _SigninPageState extends State<SigninPage> {
                 TextFormField(
                   controller: _passwordController,
                   keyboardType: TextInputType.visiblePassword,
-                  obscureText: _passwordHidden,
+                  //obscureText: _passwordHidden,
                   decoration: InputDecoration(
                     hintText: "Password",
                     suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _passwordHidden = !_passwordHidden;
-                        });
-                      },
+                      onPressed: () {},
                       icon: Icon(
-                        _passwordHidden
+                        /*_passwordHidden
                             ? Icons.visibility_off
-                            : Icons.visibility,
+                            :*/ Icons.visibility,
                       ),
                     ),
                   ),
@@ -71,9 +65,7 @@ class _SigninPageState extends State<SigninPage> {
                   height: 15,
                 ),
                 FilledButton(
-                  onPressed: loading
-                      ? null
-                      : () {
+                  onPressed:  () {
                           Navigator.pushNamed(context, "/profile");
                         },
                   child: const Text(
