@@ -1,4 +1,5 @@
 import 'package:ecommerce/common/AppColorScheme.dart';
+import 'package:ecommerce/pages/OrdersPage.dart';
 import 'package:ecommerce/pages/ProfilePage.dart';
 import 'package:ecommerce/pages/SigninPage.dart';
 import 'package:ecommerce/pages/SignupPage.dart';
@@ -74,7 +75,7 @@ class MyApp extends StatelessWidget {
         //'/home': (context) =>  HomePage(),
         //'/product': (context) =>  ProductPage(),
         //'/whishlist': (context) =>  WhishlistPage(),
-        //'/orders': (context) =>  OrdersPage(),
+        '/orders': (context) =>  OrdersPage(),
       },
       home: const SigninPage(),
     );
