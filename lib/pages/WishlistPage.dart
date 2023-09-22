@@ -1,3 +1,4 @@
+import 'package:ecommerce/common/CartBottomSheet.dart';
 import 'package:ecommerce/common/ProductCard.dart';
 import 'package:ecommerce/common/textwidgets.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ class WishlistPage extends StatelessWidget {
         centerTitle: true,
         title: SurfaceText("Wishlist", 40),
       ),
+      bottomSheet: CartBottomSheet(),
       body: GridView.builder(
         padding: EdgeInsets.all(20),
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
