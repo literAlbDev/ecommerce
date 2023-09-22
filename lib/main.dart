@@ -1,4 +1,7 @@
 import 'package:ecommerce/common/AppColorScheme.dart';
+import 'package:ecommerce/pages/ProfilePage.dart';
+import 'package:ecommerce/pages/SigninPage.dart';
+import 'package:ecommerce/pages/SignupPage.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -28,10 +31,9 @@ class MyApp extends StatelessWidget {
             surface: AppColorScheme.surface,
             onSurface: AppColorScheme.onSurface),
         appBarTheme: AppBarTheme(
-          backgroundColor: Colors.white,
-          //elevation: 0,
-          surfaceTintColor: Colors.white
-        ),
+            backgroundColor: Colors.white,
+            //elevation: 0,
+            surfaceTintColor: Colors.white),
         hintColor: AppColorScheme.hint,
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(
@@ -56,15 +58,15 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       routes: {
-        //'/signin': (context) => SigninPage(),
-        //'/signup': (context) => SignupPage(),
-        //'/profile': (context) => ProfilePage(),
+        '/signin': (context) => SigninPage(),
+        '/signup': (context) => SignupPage(),
+        '/profile': (context) => ProfilePage(),
         //'/home': (context) =>  HomePage(),
         //'/product': (context) =>  ProductPage(),
         //'/whishlist': (context) =>  WhishlistPage(),
         //'/orders': (context) =>  OrdersPage(),
       },
-      //home: const SigninPage(),
+      home: const SigninPage(),
     );
   }
 }
