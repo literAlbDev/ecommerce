@@ -4,6 +4,7 @@ import 'package:ecommerce/pages/OrdersPage.dart';
 import 'package:ecommerce/pages/ProfilePage.dart';
 import 'package:ecommerce/pages/SigninPage.dart';
 import 'package:ecommerce/pages/SignupPage.dart';
+import 'package:ecommerce/pages/WishlistPage.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -78,7 +79,7 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => ProfilePage(),
         '/home': (context) => HomePage(),
         //'/product': (context) =>  ProductPage(),
-        //'/whishlist': (context) =>  WhishlistPage(),
+        '/wishlist': (context) =>  WishlistPage(),
         '/orders': (context) => OrdersPage(),
       },
       home: const HomePage(),
