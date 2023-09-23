@@ -2,13 +2,33 @@ import 'package:ecommerce/common/AppColorScheme.dart';
 import 'package:ecommerce/common/CartBottomSheet.dart';
 import 'package:ecommerce/common/ProductCard.dart';
 import 'package:ecommerce/common/textwidgets.dart';
+import 'package:ecommerce/providers/CategoryProvider.dart';
+import 'package:ecommerce/providers/ProductsProvider.dart';
+import 'package:ecommerce/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<ProductsProvider>(context, listen: false).getProducts();
+    Provider.of<CategoryProvider>(context, listen: false).getCategories();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    UserProvider userProvider = Provider.of<UserProvider>(context);
+    ProductsProvider productsProvider = Provider.of<ProductsProvider>(context);
+    CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         leading: Builder(builder: (context) {
@@ -23,26 +43,37 @@ class HomePage extends StatelessWidget {
         }),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              productsProvider.getProducts();
+              categoryProvider.getCategories();
+            },
             icon: Icon(Icons.refresh),
             iconSize: 35,
             color: Colors.black,
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              userProvider.logout().then((value) {
+                if (value) Navigator.pushReplacementNamed(context, "/signin");
+              });
+            },
             icon: Icon(Icons.logout),
             iconSize: 35,
             color: Colors.black,
           ),
         ],
         bottom: PreferredSize(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: List.generate(10, (index) => CategoryWidget(isSelected: index %2 == 0,)),
-            ),
-          ),
           preferredSize: Size(50, 70),
+          child: !categoryProvider.loading
+              ? SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(
+                        categoryProvider.categories?["data"].length,
+                        (index) => CategoryWidget(index: index)),
+                  ),
+                )
+              : Center(child: CircularProgressIndicator()),
         ),
       ),
       drawer: Builder(
@@ -96,45 +127,75 @@ class HomePage extends StatelessWidget {
         },
       ),
       bottomSheet: CartBottomSheet(),
-      body: GridView.builder(
-        padding: EdgeInsets.all(20),
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 233,
-            crossAxisSpacing: 15,
-            childAspectRatio: 0.7,
-            mainAxisSpacing: 15),
-        itemCount: 10,
-        itemBuilder: (context, index) => ProductCard(),
-      ),
+      body: !productsProvider.loading
+          ? GridView.builder(
+              padding: EdgeInsets.all(20).copyWith(bottom: 100),
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 233,
+                  crossAxisSpacing: 15,
+                  childAspectRatio: 0.7,
+                  mainAxisSpacing: 15),
+              itemCount: productsProvider.categorizedProducts["data"].length,
+              itemBuilder: (context, index) => ProductCard(index: index),
+            )
+          : Center(
+              child: CircularProgressIndicator(),
+            ),
     );
   }
 }
 
 class CategoryWidget extends StatelessWidget {
-  const CategoryWidget({super.key, required this.isSelected});
+  CategoryWidget({super.key, required this.index});
 
-  final bool isSelected;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
+    ProductsProvider productsProvider = Provider.of<ProductsProvider>(context);
+    CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
+    String name =
+        categoryProvider.categories?["data"][index]["attributes"]["name"];
+    int id = categoryProvider.categories?["data"][index]["id"];
+    bool isSelected = categoryProvider.isSelected(id);
+
     return isSelected
-        ? Container(
-            margin: EdgeInsets.symmetric(horizontal: 10).copyWith(bottom: 30),
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-              color: AppColorScheme.primary
+        ? GestureDetector(
+            onTap: () {
+              categoryProvider.deselectCategory(id);
+              productsProvider.categorize(categoryProvider.selectedCategories);
+            },
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 10).copyWith(bottom: 30),
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  color: AppColorScheme.primary),
+              child: HeaderText(
+                name,
+                fontSize: 16,
+                color: AppColorScheme.background,
+              ),
             ),
-            child: HeaderText("category", fontSize: 16, color: AppColorScheme.background,),
           )
-        : Container(
-            margin: EdgeInsets.symmetric(horizontal: 10).copyWith(bottom: 30),
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-              border: Border.all(color: AppColorScheme.primary),
+        : GestureDetector(
+            onTap: () {
+              categoryProvider.selectCategory(id);
+              productsProvider.categorize(categoryProvider.selectedCategories);
+            },
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 10).copyWith(bottom: 30),
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(color: AppColorScheme.primary),
+              ),
+              child: HeaderText(
+                name,
+                fontSize: 16,
+                color: AppColorScheme.onSurface,
+              ),
             ),
-            child: HeaderText("category", fontSize: 16, color: AppColorScheme.onSurface,),
           );
   }
 }

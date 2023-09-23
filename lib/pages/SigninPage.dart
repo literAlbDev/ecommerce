@@ -1,6 +1,9 @@
 import 'package:ecommerce/common/AppColorScheme.dart';
 import 'package:ecommerce/common/textwidgets.dart';
+import 'package:ecommerce/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SigninPage extends StatefulWidget {
   const SigninPage({super.key});
@@ -14,7 +17,21 @@ class _SigninPageState extends State<SigninPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    checkLoggedIn();
+  }
+
+  void checkLoggedIn() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    if (sharedPreferences.getString("token") != null)
+      Navigator.pushReplacementNamed(context, "/home");
+  }
+
+  @override
   Widget build(BuildContext context) {
+    UserProvider userProvider = Provider.of<UserProvider>(context);
+
     return Scaffold(
       appBar: AppBar(),
       resizeToAvoidBottomInset: false,
@@ -48,15 +65,17 @@ class _SigninPageState extends State<SigninPage> {
                 TextFormField(
                   controller: _passwordController,
                   keyboardType: TextInputType.visiblePassword,
-                  //obscureText: _passwordHidden,
+                  obscureText: !userProvider.isVisible,
                   decoration: InputDecoration(
                     hintText: "Password",
                     suffixIcon: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        userProvider.toggleVisibility();
+                      },
                       icon: Icon(
-                        /*_passwordHidden
-                            ? Icons.visibility_off
-                            :*/ Icons.visibility,
+                        userProvider.isVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                     ),
                   ),
@@ -65,8 +84,16 @@ class _SigninPageState extends State<SigninPage> {
                   height: 15,
                 ),
                 FilledButton(
-                  onPressed:  () {
-                          Navigator.pushNamed(context, "/home");
+                  onPressed: userProvider.loading
+                      ? null
+                      : () {
+                          userProvider
+                              .login(_emailController.text,
+                                  _passwordController.text)
+                              .then((value) {
+                            if (value)
+                              Navigator.pushReplacementNamed(context, "/home");
+                          });
                         },
                   child: const Text(
                     "Sign in",
@@ -93,7 +120,7 @@ class _SigninPageState extends State<SigninPage> {
                   ]),
                 ),
                 Text(
-                  "error",
+                  userProvider.errors,
                   style: TextStyle(color: Colors.red),
                 ),
               ],

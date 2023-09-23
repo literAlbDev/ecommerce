@@ -1,28 +1,14 @@
 import 'package:ecommerce/common/AppColorScheme.dart';
 import 'package:ecommerce/common/textwidgets.dart';
 import 'package:ecommerce/pages/ProfilePage/EditAddressBottomSheet.dart';
+import 'package:ecommerce/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AddressCard extends StatelessWidget {
-  AddressCard({
-    required this.firstName,
-    required this.lastName,
-    required this.addressLine1,
-    this.addressLine2,
-    required this.country,
-    required this.state,
-    required this.city,
-    required this.zipCode,
-  });
+  AddressCard({required this.index});
 
-  final String firstName;
-  final String lastName;
-  final String addressLine1;
-  final String? addressLine2;
-  final String country;
-  final String state;
-  final String city;
-  final String zipCode;
+  final int index;
 
   final double nameFontSize = 20;
   final double titleFontSize = 11;
@@ -31,6 +17,26 @@ class AddressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    UserProvider userProvider = Provider.of<UserProvider>(context);
+    String firstName = userProvider.user?["data"]["attributes"]
+        ['shippingAddresses'][index]["first_name"];
+    String lastName = userProvider.user?["data"]["attributes"]
+        ['shippingAddresses'][index]["last_name"];
+    String addressLine1 = userProvider.user?["data"]["attributes"]
+        ['shippingAddresses'][index]["address_line_1"];
+    String? addressLine2 = userProvider.user?["data"]["attributes"]
+        ['shippingAddresses'][index]["address_line_2"];
+    String country = userProvider.user?["data"]["attributes"]
+        ['shippingAddresses'][index]["country"];
+    String state = userProvider.user?["data"]["attributes"]['shippingAddresses']
+        [index]["state"];
+    String city = userProvider.user?["data"]["attributes"]['shippingAddresses']
+        [index]["city"];
+    String zipCode = userProvider.user?["data"]["attributes"]
+        ['shippingAddresses'][index]["zip_code"];
+    int id = userProvider.user?["data"]["attributes"]['shippingAddresses']
+        [index]["id"];
+
     return Card(
       margin: EdgeInsets.only(bottom: 30),
       elevation: 5,
@@ -45,7 +51,9 @@ class AddressCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    userProvider.deleteAddress(id);
+                  },
                   icon: Icon(Icons.delete),
                   color: Colors.red,
                   style: IconButton.styleFrom(
@@ -57,7 +65,7 @@ class AddressCard extends StatelessWidget {
                 ),
                 Center(
                   child: Text(
-                    this.firstName + " " + this.lastName,
+                    firstName + " " + lastName,
                     style: TextStyle(
                         fontSize: nameFontSize, fontWeight: FontWeight.bold),
                   ),
@@ -66,7 +74,11 @@ class AddressCard extends StatelessWidget {
                   onPressed: () {
                     showModalBottomSheet(
                         context: context,
-                        builder: (context) => EditAddressBottomSheet(),
+                        builder: (context) => EditAddressBottomSheet(
+                              id: id,
+                              userAddressData: userProvider.user?["data"]
+                                  ["attributes"]['shippingAddresses'][index],
+                            ),
                         useSafeArea: true,
                         isScrollControlled: true);
                   },
@@ -94,7 +106,7 @@ class AddressCard extends StatelessWidget {
                           "address line 2:",
                           titleFontSize,
                         ),
-                        SurfaceText(addressLine2!, valueFontSize),
+                        SurfaceText(addressLine2, valueFontSize),
                         SizedBox(height: padding),
                       ],
                     )

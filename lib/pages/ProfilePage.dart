@@ -3,7 +3,9 @@ import 'package:ecommerce/common/AppColorScheme.dart';
 import 'package:ecommerce/common/textwidgets.dart';
 import 'package:ecommerce/pages/ProfilePage/AddAddressBottomSheet.dart';
 import 'package:ecommerce/pages/ProfilePage/EditProfileBottomSheet.dart';
+import 'package:ecommerce/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -14,7 +16,15 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   @override
+  void initState() {
+    super.initState();
+    Provider.of<UserProvider>(context, listen: false).getMe();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    UserProvider userProvider = Provider.of<UserProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -24,7 +34,8 @@ class _ProfilePageState extends State<ProfilePage> {
             onPressed: () {
               showModalBottomSheet(
                 context: context,
-                builder: (context) => EditProfileBottomSheet(),
+                builder: (context) => EditProfileBottomSheet(userData: userProvider
+                    .user?["data"]["attributes"]),
                 useSafeArea: true,
                 isScrollControlled: true,
               );
@@ -48,7 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Icon(Icons.add),
         ),
       ),
-      body: SingleChildScrollView(
+      body: userProvider.user != null ? SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30).copyWith(top: 15),
           child: SizedBox(
@@ -57,38 +68,28 @@ class _ProfilePageState extends State<ProfilePage> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                PrimaryText("albaraa", 30),
+                PrimaryText(
+                    userProvider.user?["data"]["attributes"]['name'], 30),
                 // change to api value
                 SizedBox(height: 5),
 
-                PrimaryText("albaraa@gmail.com", 30),
+                PrimaryText(
+                    userProvider.user?["data"]["attributes"]['email'], 30),
                 // change to api value
                 SizedBox(height: 40),
 
                 Row(children: [PrimaryText("addresses:", 25)]),
-                for (int index in List.generate(7, (index) => index))
-                  AddressCard(
-                    firstName: "first ${index}",
-                    // change to api value
-                    lastName: "last ${index}",
-                    // change to api value
-                    addressLine1: "address line 1 infos ${index}",
-                    // change to api value
-                    addressLine2: "address line 2 infos ${index}",
-                    // change to api value
-                    country: "Turkey",
-                    // change to api value
-                    state: "Istanbul",
-                    // change to api value
-                    city: "Basak",
-                    // change to api value
-                    zipCode: "33452", // change to api value
-                  ),
+                for (int index in List.generate(
+                    userProvider
+                        .user?["data"]["attributes"]['shippingAddresses']
+                        .length,
+                    (index) => index))
+                  AddressCard(index: index),
               ],
             ),
           ),
         ),
-      ),
+      ) : Center(child: CircularProgressIndicator(),),
     );
   }
 }

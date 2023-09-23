@@ -1,6 +1,8 @@
 import 'package:ecommerce/common/AppColorScheme.dart';
 import 'package:ecommerce/common/textwidgets.dart';
+import 'package:ecommerce/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -17,6 +19,8 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
+    UserProvider userProvider = Provider.of<UserProvider>(context);
+
     return Scaffold(
       appBar: AppBar(),
       resizeToAvoidBottomInset: false,
@@ -50,15 +54,17 @@ class _SignupPageState extends State<SignupPage> {
                 TextFormField(
                   controller: _passwordController,
                   keyboardType: TextInputType.visiblePassword,
-                  //obscureText: _passwordHidden,
+                  obscureText: !userProvider.isVisible,
                   decoration: InputDecoration(
                     hintText: "Password",
                     suffixIcon: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        userProvider.toggleVisibility();
+                      },
                       icon: Icon(
-                        /*_passwordHidden
-                            ? Icons.visibility_off
-                            :*/ Icons.visibility,
+                        userProvider.isVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                     ),
                   ),
@@ -67,22 +73,38 @@ class _SignupPageState extends State<SignupPage> {
                 TextFormField(
                   controller: _rpasswordController,
                   keyboardType: TextInputType.visiblePassword,
-                  //obscureText: _rpasswordHidden,
+                  obscureText: !userProvider.isVisible,
                   decoration: InputDecoration(
                     hintText: "Re-Password",
                     suffixIcon: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        userProvider.toggleVisibility();
+                      },
                       icon: Icon(
-                        /*_rpasswordHidden
-                            ? Icons.visibility_off
-                            :*/ Icons.visibility,
+                        userProvider.isVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                     ),
                   ),
                 ),
                 SizedBox(height: 15),
                 FilledButton(
-                  onPressed:  () {},
+                  onPressed: userProvider.loading
+                      ? null
+                      : () {
+                          userProvider
+                              .signup(
+                                  _nameController.text,
+                                  _emailController.text,
+                                  _passwordController.text,
+                                  _rpasswordController.text)
+                              .then((value) {
+                            if (value)
+                              Navigator.pushReplacementNamed(
+                                  context, "/home");
+                          });
+                        },
                   child: const Text(
                     "Sign up",
                     style: TextStyle(fontSize: 25),
@@ -110,7 +132,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ),
                 Text(
-                  "error",
+                  userProvider.errors,
                   style: TextStyle(color: Colors.red),
                 ),
               ],
