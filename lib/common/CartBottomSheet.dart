@@ -2,6 +2,7 @@ import 'package:ecommerce/common/AppColorScheme.dart';
 import 'package:ecommerce/common/textwidgets.dart';
 import 'package:ecommerce/providers/CartProvider.dart';
 import 'package:ecommerce/providers/ProductsProvider.dart';
+import 'package:ecommerce/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -35,6 +36,10 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    int addresses_length = Provider.of<UserProvider>(context, listen: false)
+        .user?['data']['attributes']['shippingAddresses']
+        .length;
+
     return LayoutBuilder(
       builder: (context, constraints) => DraggableScrollableSheet(
         initialChildSize: commentsHeaderHeight / constraints.maxHeight,
@@ -65,11 +70,39 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
                                   horizontal:
                                       MediaQuery.of(context).size.width / 5),
                               child: FilledButton(
-                                onPressed: cartProvider.loading ? null : () {
-                                  cartProvider.order();
-                                  Provider.of<ProductsProvider>(context, listen: false).getProducts();
-                                  Provider.of<ProductsProvider>(context, listen: false).getProduct();
-                                },
+                                onPressed: cartProvider.loading
+                                    ? null
+                                    : () {
+                                        if (addresses_length == 0) {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                              title: SecondaryText(
+                                                  "No shipping addresses provided. please add one from profile",
+                                                  20),
+                                              actions: [
+                                                TextButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                      Navigator.pushNamed(
+                                                          context, "/profile");
+                                                    },
+                                                    child:
+                                                        PrimaryText("OK", 25)),
+                                              ],
+                                            ),
+                                          );
+                                          return;
+                                        }
+
+                                        cartProvider.order();
+                                        Provider.of<ProductsProvider>(context,
+                                                listen: false)
+                                            .getProducts();
+                                        Provider.of<ProductsProvider>(context,
+                                                listen: false)
+                                            .getProduct();
+                                      },
                                 style: FilledButton.styleFrom(
                                   minimumSize: Size(double.infinity, 40),
                                 ),
