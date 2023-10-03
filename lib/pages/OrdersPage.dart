@@ -85,77 +85,31 @@ class _OrdersPageState extends State<OrdersPage> {
                       ],
                     ),
                     Stack(
-                      children: [
-                        Align(
-                          heightFactor: 1.2,
-                          widthFactor: 1.0,
-                          child: Container(
-                            width: 100,
-                            height: 70,
-                            decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                    blurRadius: 3,
-                                    offset: Offset(1, 1),
-                                    color: Colors.grey.withOpacity(0.5))
-                              ],
-                              //border: Border.all(color: Colors.black),
-                              image: DecorationImage(
-                                  image: NetworkImage(
-                                    images[0],
-                                    scale: 1,
-                                  ),
-                                  fit: BoxFit.fill),
+                      children: List.generate(images.length > 3 ? 3 : images.length, (index) {
+                        return Align(
+                            heightFactor: 1.2 - (index != 0 ? index/10 : 0),
+                            widthFactor: 1.0 + (index != 0 ? index/10 : 0),
+                            child: Container(
+                              width: 100,
+                              height: 70,
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                      blurRadius: 3,
+                                      offset: Offset(1, 1),
+                                      color: Colors.grey.withOpacity(0.5))
+                                ],
+                                //border: Border.all(color: Colors.black),
+                                image: DecorationImage(
+                                    image: NetworkImage(
+                                      images[index],
+                                      scale: 1,
+                                    ),
+                                    fit: BoxFit.fill),
+                              ),
                             ),
-                          ),
-                        ),
-                        Align(
-                          heightFactor: 1.1,
-                          widthFactor: 1.1,
-                          child: Container(
-                            width: 100,
-                            height: 70,
-                            decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                    blurRadius: 3,
-                                    offset: Offset(1, 1),
-                                    color: Colors.grey.withOpacity(0.5))
-                              ],
-                              //border: Border.all(color: Colors.black),
-                              image: DecorationImage(
-                                  image: NetworkImage(
-                                    images[1],
-                                    scale: 1,
-                                  ),
-                                  fit: BoxFit.fill),
-                            ),
-                          ),
-                        ),
-                        Align(
-                          heightFactor: 1.0,
-                          widthFactor: 1.2,
-                          child: Container(
-                            width: 100,
-                            height: 70,
-                            decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                    blurRadius: 3,
-                                    offset: Offset(1, 1),
-                                    color: Colors.grey.withOpacity(0.5))
-                              ],
-                              //border: Border.all(color: Colors.black),
-                              image: DecorationImage(
-                                  image: NetworkImage(
-                                    images[2],
-                                    scale: 1,
-                                  ),
-                                  fit: BoxFit.fill),
-                            ),
-                          ),
-                        ),
-                      ],
+                          );
+                      }),
                     )
                   ],
                 ),

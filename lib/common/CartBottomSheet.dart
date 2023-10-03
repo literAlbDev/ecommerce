@@ -1,6 +1,7 @@
 import 'package:ecommerce/common/AppColorScheme.dart';
 import 'package:ecommerce/common/textwidgets.dart';
 import 'package:ecommerce/providers/CartProvider.dart';
+import 'package:ecommerce/providers/ProductsProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -66,6 +67,8 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
                               child: FilledButton(
                                 onPressed: cartProvider.loading ? null : () {
                                   cartProvider.order();
+                                  Provider.of<ProductsProvider>(context, listen: false).getProducts();
+                                  Provider.of<ProductsProvider>(context, listen: false).getProduct();
                                 },
                                 style: FilledButton.styleFrom(
                                   minimumSize: Size(double.infinity, 40),

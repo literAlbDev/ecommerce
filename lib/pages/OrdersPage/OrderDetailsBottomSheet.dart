@@ -9,6 +9,7 @@ class OrderDetailsBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    OrdersProvider ordersProvider = Provider.of<OrdersProvider>(context);
 
     return DraggableScrollableSheet(
       initialChildSize: 1,
@@ -23,10 +24,9 @@ class OrderDetailsBottomSheet extends StatelessWidget {
               crossAxisSpacing: 15,
               childAspectRatio: 0.7,
               mainAxisSpacing: 15),
-          itemCount: 3,
+          itemCount: ordersProvider.order['attributes']['orderDetails'].length,
           itemBuilder: (context, index)
           {
-            OrdersProvider ordersProvider = Provider.of<OrdersProvider>(context);
 
             int quantity = ordersProvider.order['attributes']['orderDetails'][index]['attributes']['quantity'];
             double price = double.parse(ordersProvider.order['attributes']['orderDetails'][index]['attributes']['price']);

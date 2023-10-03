@@ -71,7 +71,7 @@ class ProductCard extends StatelessWidget {
         children: [
           stock <= 10
               ? Banner(
-                  message: "limited stock",
+                  message: stock == 0 ? "Finished" : "limited stock",
                   location: BannerLocation.topEnd,
                   color: AppColorScheme.secondary,
                   child: GestureDetector(

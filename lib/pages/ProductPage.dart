@@ -107,7 +107,7 @@ class _ProductPageState extends State<ProductPage> {
               ),
               SizedBox(height: 13),
               FilledButton(
-                onPressed: !cartProvider.inCart(productsProvider.product!) ? () {
+                onPressed: stock == 0 ? null : !cartProvider.inCart(productsProvider.product!) ? () {
                   cartProvider.addToCart(productsProvider.product!);
                 } : null,
                 child:
@@ -130,7 +130,8 @@ class _ProductPageState extends State<ProductPage> {
                   Align(
                     widthFactor: 3,
                     child: FilledButton(
-                      onPressed: () {},
+                      onPressed: () {
+                      },
                       style: FilledButton.styleFrom(
                           minimumSize: Size(0, 0),
                           padding: EdgeInsets.all(5),
