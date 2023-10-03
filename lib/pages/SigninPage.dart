@@ -23,9 +23,15 @@ class _SigninPageState extends State<SigninPage> {
   }
 
   void checkLoggedIn() async {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    if (sharedPreferences.getString("token") != null)
-      Navigator.pushReplacementNamed(context, "/home");
+    if (sharedPreferences.getString("token") == null) return;
+    if (!await userProvider.checkLoggedIn()) {
+      sharedPreferences.remove("token");
+      return;
+    }
+    Navigator.pushReplacementNamed(context, "/home");
   }
 
   @override

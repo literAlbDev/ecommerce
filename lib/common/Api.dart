@@ -257,14 +257,19 @@ class Api {
     return result;
   }
 
-  Future<dynamic> products() async {
+  Future<dynamic> products(String token) async {
     var url = Uri.parse(baseUrl + "/products");
+    Map<String, String> headersWithToken = headers;
+    headersWithToken.addAll({
+      'Authorization': "Bearer $token",
+    });
+
 
     http.Response response;
     try {
       response = await http.get(
         url,
-        headers: headers,
+        headers: headersWithToken,
       );
       statusCode = response.statusCode;
 
@@ -276,14 +281,43 @@ class Api {
     return result;
   }
 
-  Future<dynamic> categories() async {
+  Future<dynamic> product(String token, int id) async {
+    var url = Uri.parse(baseUrl + "/products/$id");
+    Map<String, String> headersWithToken = headers;
+    headersWithToken.addAll({
+      'Authorization': "Bearer $token",
+    });
+
+
+    http.Response response;
+    try {
+      response = await http.get(
+        url,
+        headers: headersWithToken,
+      );
+      statusCode = response.statusCode;
+
+      result = jsonDecode(response.body);
+    } on Exception {
+      result = errorMessage;
+    }
+
+    return result;
+  }
+
+  Future<dynamic> categories(String token) async {
     var url = Uri.parse(baseUrl + "/categories");
+    Map<String, String> headersWithToken = headers;
+    headersWithToken.addAll({
+      'Authorization': "Bearer $token",
+    });
+
 
     http.Response response;
     try {
       response = await http.get(
         url,
-        headers: headers,
+        headers: headersWithToken,
       );
       statusCode = response.statusCode;
 
@@ -295,4 +329,128 @@ class Api {
     return result;
   }
 
+  Future<dynamic> wishlist(String token) async {
+    var url = Uri.parse(baseUrl + "/whishlist");
+    Map<String, String> headersWithToken = headers;
+    headersWithToken.addAll({
+      'Authorization': "Bearer $token",
+    });
+
+    http.Response response;
+    try {
+      response = await http.get(
+        url,
+        headers: headersWithToken,
+      );
+      statusCode = response.statusCode;
+
+      result = jsonDecode(response.body);
+    } on Exception {
+      result = errorMessage;
+    }
+
+    return result;
+  }
+
+  Future<dynamic> addWishlist(String token, id) async {
+    var url = Uri.parse(baseUrl + "/whishlist");
+    Map<String, String> headersWithToken = headers;
+    headersWithToken.addAll({
+      'Authorization': "Bearer $token",
+    });
+
+    String request = jsonEncode({"product_id": id});
+
+    http.Response response;
+    try {
+      response = await http.post(
+        url,
+        headers: headersWithToken,
+        body: request,
+      );
+
+      statusCode = response.statusCode;
+
+      result = jsonDecode(response.body);
+    } on Exception {
+      result = errorMessage;
+    }
+
+    return result;
+  }
+
+  Future<dynamic> removeWishlist(String token, id) async {
+    var url = Uri.parse(baseUrl + "/whishlist/$id");
+    Map<String, String> headersWithToken = headers;
+    headersWithToken.addAll({
+      'Authorization': "Bearer $token",
+    });
+
+    http.Response response;
+    try {
+      response = await http.delete(
+        url,
+        headers: headersWithToken,
+      );
+
+      statusCode = response.statusCode;
+
+      result = jsonDecode(response.body);
+    } on Exception {
+      result = errorMessage;
+    }
+
+    return result;
+  }
+
+  Future<dynamic> order(String token, List products) async {
+    var url = Uri.parse(baseUrl + "/orders");
+    Map<String, String> headersWithToken = headers;
+    headersWithToken.addAll({
+      'Authorization': "Bearer $token",
+    });
+
+    String request = jsonEncode({"products": products});
+
+    http.Response response;
+    try {
+      response = await http.post(
+        url,
+        headers: headersWithToken,
+        body: request,
+      );
+
+      statusCode = response.statusCode;
+
+      result = jsonDecode(response.body);
+    } on Exception {
+      result = errorMessage;
+    }
+
+    return result;
+  }
+
+  Future<dynamic> orders(String token) async {
+    var url = Uri.parse(baseUrl + "/orders");
+    Map<String, String> headersWithToken = headers;
+    headersWithToken.addAll({
+      'Authorization': "Bearer $token",
+    });
+
+    http.Response response;
+    try {
+      response = await http.get(
+        url,
+        headers: headersWithToken,
+      );
+
+      statusCode = response.statusCode;
+
+      result = jsonDecode(response.body);
+    } on Exception {
+      result = errorMessage;
+    }
+
+    return result;
+  }
 }

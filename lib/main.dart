@@ -6,95 +6,176 @@ import 'package:ecommerce/pages/ProfilePage.dart';
 import 'package:ecommerce/pages/SigninPage.dart';
 import 'package:ecommerce/pages/SignupPage.dart';
 import 'package:ecommerce/pages/WishlistPage.dart';
+import 'package:ecommerce/providers/CartProvider.dart';
 import 'package:ecommerce/providers/CategoryProvider.dart';
+import 'package:ecommerce/providers/OrdersProvider.dart';
 import 'package:ecommerce/providers/ProductsProvider.dart';
+import 'package:ecommerce/providers/ThemeProvider.dart';
 import 'package:ecommerce/providers/UserProvider.dart';
+import 'package:ecommerce/providers/WishListProvieder.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => UserProvider()),
+      ChangeNotifierProvider(create: (_) => ProductsProvider()),
+      ChangeNotifierProvider(create: (_) => CategoryProvider()),
+      ChangeNotifierProvider(create: (_) => WishListProvider()),
+      ChangeNotifierProvider(create: (_) => CartProvider()),
+      ChangeNotifierProvider(create: (_) => OrdersProvider()),
+      ChangeNotifierProvider(create: (_) => ThemeProvider()),
+    ],
+    child: const MyApp(),
+  ));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<ThemeProvider>(context, listen: false).init();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => ProductsProvider()),
-        ChangeNotifierProvider(create: (_) => CategoryProvider()),
-      ],
-      child: MaterialApp(
-        title: 'ecommerce',
-        theme: ThemeData(
-          colorScheme: ColorScheme(
-              brightness: Brightness.light,
-              primary: AppColorScheme.primary,
-              onPrimary: AppColorScheme.onPrimary,
-              secondary: AppColorScheme.secondary,
-              onSecondary: AppColorScheme.onSecondary,
-              error: Colors.red,
-              onError: Colors.white,
-              background: AppColorScheme.background,
-              // Change
-              onBackground: Colors.grey,
-              surface: AppColorScheme.primarySurface,
-              onSurface: AppColorScheme.onSurface),
-          appBarTheme: AppBarTheme(
-              backgroundColor: Colors.white,
-              //elevation: 0,
-              surfaceTintColor: Colors.white),
-          hintColor: AppColorScheme.hint,
-          inputDecorationTheme: InputDecorationTheme(
-            border: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(100),
-            ),
-            filled: true,
-            hintStyle: const TextStyle(fontSize: 13),
-            suffixIconColor: AppColorScheme.hint,
+    return MaterialApp(
+      title: 'ecommerce',
+      themeMode: Provider.of<ThemeProvider>(context).theme == 'light'
+          ? ThemeMode.light
+          : ThemeMode.dark,
+      theme: ThemeData(
+        colorScheme: ColorScheme(
+            brightness: Brightness.light,
+            primary: AppColorScheme.primary,
+            onPrimary: AppColorScheme.onPrimary,
+            secondary: AppColorScheme.secondary,
+            onSecondary: AppColorScheme.onSecondary,
+            error: Colors.red,
+            onError: Colors.white,
+            background: AppColorScheme.background,
+            // Change
+            onBackground: Colors.grey,
+            surface: AppColorScheme.primarySurface,
+            onSurface: AppColorScheme.onSurface),
+        appBarTheme: AppBarTheme(
+            backgroundColor: Colors.white,
+            //elevation: 0,
+            surfaceTintColor: Colors.white),
+        hintColor: AppColorScheme.hint,
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.circular(100),
           ),
-          filledButtonTheme: FilledButtonThemeData(
-            style: FilledButton.styleFrom(
-              textStyle: TextStyle(
-                fontWeight: FontWeight.w400,
-              ),
-              minimumSize: Size(double.infinity, 55),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-            ),
-          ),
-          floatingActionButtonTheme: FloatingActionButtonThemeData(
-            backgroundColor: AppColorScheme.secondarySurface,
-            foregroundColor: AppColorScheme.secondary,
-          ),
-          bottomSheetTheme: BottomSheetThemeData(
-            backgroundColor: AppColorScheme.background,
-            showDragHandle: true,
-            dragHandleColor: AppColorScheme.secondary,
-          ),
-          listTileTheme: ListTileThemeData(
-            iconColor: AppColorScheme.primary,
-            textColor: AppColorScheme.primary,
-          ),
-          useMaterial3: true,
+          filled: true,
+          hintStyle: const TextStyle(fontSize: 13),
+          suffixIconColor: AppColorScheme.hint,
         ),
-        routes: {
-          '/signin': (context) => SigninPage(),
-          '/signup': (context) => SignupPage(),
-          '/profile': (context) => ProfilePage(),
-          '/home': (context) => HomePage(),
-          '/product': (context) => ProductPage(),
-          '/wishlist': (context) => WishlistPage(),
-          '/orders': (context) => OrdersPage(),
-        },
-        home: const SigninPage(),
+        filledButtonTheme: FilledButtonThemeData(
+          style: FilledButton.styleFrom(
+            textStyle: TextStyle(
+              fontWeight: FontWeight.w400,
+            ),
+            minimumSize: Size(double.infinity, 55),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+          ),
+        ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: AppColorScheme.secondarySurface,
+          foregroundColor: AppColorScheme.secondary,
+        ),
+        bottomSheetTheme: BottomSheetThemeData(
+          backgroundColor: AppColorScheme.background,
+          showDragHandle: true,
+          dragHandleColor: AppColorScheme.secondary,
+        ),
+        listTileTheme: ListTileThemeData(
+          iconColor: AppColorScheme.primary,
+          textColor: AppColorScheme.primary,
+        ),
+        useMaterial3: true,
       ),
+
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme(
+            brightness: Brightness.dark,
+            primary: AppColorScheme.primary,
+            onPrimary: AppColorScheme.onPrimary,
+            secondary: AppColorScheme.secondary,
+            onSecondary: AppColorScheme.onSecondary,
+            error: Colors.red,
+            onError: Colors.white,
+            background: AppColorScheme.background,
+            onBackground: Colors.grey,
+            surface: AppColorScheme.primarySurface,
+            onSurface: AppColorScheme.onSurface),
+        appBarTheme: AppBarTheme(
+            backgroundColor: AppColorScheme.background,
+            //elevation: 0,
+            surfaceTintColor: Colors.white),
+        iconButtonTheme: IconButtonThemeData(
+          style: IconButton.styleFrom(
+            foregroundColor: Colors.grey,
+          )
+        ),
+        hintColor: AppColorScheme.hint,
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.circular(100),
+          ),
+          filled: true,
+          hintStyle: const TextStyle(fontSize: 13),
+          suffixIconColor: AppColorScheme.hint,
+
+        ),
+        filledButtonTheme: FilledButtonThemeData(
+          style: FilledButton.styleFrom(
+            textStyle: TextStyle(
+              fontWeight: FontWeight.w400,
+            ),
+            minimumSize: Size(double.infinity, 55),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+          ),
+        ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: AppColorScheme.secondarySurface,
+          foregroundColor: AppColorScheme.secondary,
+        ),
+        bottomSheetTheme: BottomSheetThemeData(
+          backgroundColor: AppColorScheme.background,
+          showDragHandle: true,
+          dragHandleColor: AppColorScheme.secondary,
+        ),
+        listTileTheme: ListTileThemeData(
+          iconColor: AppColorScheme.primary,
+          textColor: AppColorScheme.primary,
+        ),
+        useMaterial3: true,
+      ),
+      routes: {
+        '/signin': (context) => SigninPage(),
+        '/signup': (context) => SignupPage(),
+        '/profile': (context) => ProfilePage(),
+        '/home': (context) => HomePage(),
+        '/product': (context) => ProductPage(),
+        '/wishlist': (context) => WishlistPage(),
+        '/orders': (context) => OrdersPage(),
+      },
+      home: const SigninPage(),
     );
   }
 }

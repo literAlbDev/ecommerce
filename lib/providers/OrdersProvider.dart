@@ -2,10 +2,10 @@ import 'package:ecommerce/common/Api.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class CategoryProvider extends ChangeNotifier {
+class OrdersProvider extends ChangeNotifier {
   late int id;
-  Map<String, dynamic>? categories;
-  List selectedCategories = [];
+  Map<String, dynamic> orders = {};
+  Map<String, dynamic> order = {};
   Map<String, dynamic> result = {};
   String errors = '';
   bool loading = true;
@@ -21,48 +21,31 @@ class CategoryProvider extends ChangeNotifier {
     notify ? notifyListeners() : null;
   }
 
-  void selectCategory(int id){
-    startLoading();
-    if(!isSelected(id)) {
-      selectedCategories.add(id);
-    }
-    endLoading();
-  }
-
-  void deselectCategory(int id){
-    startLoading();
-    if(isSelected(id)) {
-      selectedCategories.remove(id);
-    }
-    endLoading();
-  }
-
-  bool isSelected(int id){
-    return selectedCategories.contains(id);
-  }
-
-  Future<bool> initCategories() async{
+  Future<bool> initOrders() async {
     startLoading(notify: false);
 
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    result = await Api().categories(sharedPreferences.getString("token")!);
+    result = await Api().orders(sharedPreferences.getString("token")!);
     if (result.keys.last != "errors") {
-      categories = result;
-
+      orders = result;
       endLoading();
       return true;
     }
+
     endLoading();
     return false;
   }
 
-  Future<bool> getCategories() async{
+  Future<bool> getOrders() async {
     startLoading();
 
-    bool rc = await initCategories();
+    bool rc = await initOrders();
 
     endLoading();
     return rc;
   }
 
+  void setOrder(int id){
+    this.id = id;
+  }
 }

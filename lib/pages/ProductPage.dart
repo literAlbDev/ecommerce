@@ -2,33 +2,90 @@ import 'package:ecommerce/common/AppColorScheme.dart';
 import 'package:ecommerce/common/CartBottomSheet.dart';
 import 'package:ecommerce/common/RateWidget.dart';
 import 'package:ecommerce/common/textwidgets.dart';
+import 'package:ecommerce/providers/CartProvider.dart';
+import 'package:ecommerce/providers/ProductsProvider.dart';
+import 'package:ecommerce/providers/WishListProvieder.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class ProductPage extends StatelessWidget {
+class ProductPage extends StatefulWidget {
   const ProductPage({super.key});
 
   @override
+  State<ProductPage> createState() => _ProductPageState();
+}
+
+class _ProductPageState extends State<ProductPage> {
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<ProductsProvider>(context, listen: false).initProduct();
+  }
+  int calculateRate(ProductsProvider productsProvider) {
+    int rate = 0;
+
+    dynamic revs = productsProvider.product?["data"]['attributes']['reviews'] ?? [];
+    int len = revs.isNotEmpty ? revs.length : 0;
+    if (len > 0) {
+      for (Map r in revs) {
+        rate += r["attributes"]["rating"] as int;
+      }
+      rate = rate / len as int;
+    }
+
+    return rate;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    ProductsProvider productsProvider = Provider.of<ProductsProvider>(context);
+    WishListProvider wishListProvider = Provider.of<WishListProvider>(context);
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
+
+    String name = productsProvider.product?["data"]['attributes']['name'] ?? "";
+    String image = productsProvider.product?["data"]['attributes']['image'] ?? "";
+    String price = productsProvider.product?["data"]['attributes']['price'] ?? "";
+    String description = productsProvider.product?["data"]['attributes']['description'] ?? "";
+    int stock = productsProvider.product?["data"]['attributes']['stock'] ?? 0;
+    bool inWishList =
+        productsProvider.product?["data"]['attributes']['inWishList'] ?? false;
+
+    int id = productsProvider.product?["data"]['id'] ?? 0;
+
+    List reviews = productsProvider.product?["data"]['attributes']['reviews'] ?? [];
+
+    int rate = calculateRate(productsProvider);
+
     return Scaffold(
       appBar: AppBar(),
       bottomSheet: CartBottomSheet(),
-      body: SingleChildScrollView(
+      body: !productsProvider.loading ? SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.network("https://placehold.co/400x300.png"),
+              Image.network(image),
               SizedBox(height: 13),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  PrimaryText("product name like iphone 11", 17),
+                  PrimaryText(name, 17),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      productsProvider.startLoading();
+                      if (inWishList)
+                        wishListProvider.removeWishList(id).then((value) {
+                          productsProvider.getProduct();
+                        });
+                      else
+                        wishListProvider.addWishList(id).then((value) {
+                          productsProvider.getProduct();
+                        });
+                    },
                     child: Icon(
-                      Icons.favorite,
-                      color: AppColorScheme.primary, //changeable
+                      inWishList ? Icons.favorite : Icons.favorite_border,
+                      color: inWishList ? AppColorScheme.primary : Colors.grey,
                       size: 40,
                     ),
                   ),
@@ -37,20 +94,22 @@ class ProductPage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  PrimaryText("\$ 65.00", 30),
-                  RateWidget(rate: 3, size: 30), // cahnge
+                  PrimaryText(price, 30),
+                  RateWidget(rate: rate, size: 30), // cahnge
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   PrimaryText("Stock: ", 16),
-                  SecondaryText("1000", 16),
+                  SecondaryText("$stock", 16),
                 ],
               ),
               SizedBox(height: 13),
               FilledButton(
-                onPressed: () {},
+                onPressed: !cartProvider.inCart(productsProvider.product!) ? () {
+                  cartProvider.addToCart(productsProvider.product!);
+                } : null,
                 child:
                     const Text("Add to Cart", style: TextStyle(fontSize: 25)),
               ),
@@ -59,7 +118,7 @@ class ProductPage extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(left: 20),
                 child: PrimaryText(
-                  "the ldasifina vjnf v  bvnjkfgvrygfbnfm vfhd njjb lfhvb n jhfhbvfkl",
+                  description,
                   14,
                 ),
               ),
@@ -83,12 +142,12 @@ class ProductPage extends StatelessWidget {
                   ),
                 ],
               ),
-              for (int index in List.generate(5, (index) => index))
+              for (int index in List.generate(reviews.length, (index) => index))
                 ReviewWidget(isEditable: index == 0 ? true : false),
             ],
           ),
         ),
-      ),
+      ) : Center(child: CircularProgressIndicator(),),
     );
   }
 }
@@ -143,7 +202,6 @@ class EditReviewDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       surfaceTintColor: AppColorScheme.background,
-
       content: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.spaceAround,

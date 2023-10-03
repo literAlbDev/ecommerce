@@ -1,6 +1,8 @@
 import 'package:ecommerce/common/AppColorScheme.dart';
 import 'package:ecommerce/common/textwidgets.dart';
+import 'package:ecommerce/providers/CartProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CartBottomSheet extends StatefulWidget {
   const CartBottomSheet({Key? key}) : super(key: key);
@@ -39,6 +41,8 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
         maxChildSize: 1.0,
         expand: false,
         builder: (context, scrollController) {
+          CartProvider cartProvider = Provider.of<CartProvider>(context);
+
           return Container(
             decoration: BoxDecoration(
               color: AppColorScheme.primarySurfaceBackgound,
@@ -51,25 +55,29 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
                     key: commentsHeaderKey, scrollController: scrollController),
                 Expanded(
                   child: ListView.builder(
-                      itemCount: 30,
+                      itemCount: cartProvider.cart.length == 0
+                          ? 0
+                          : cartProvider.cart.length + 1,
                       itemBuilder: (context, index) => index == 0
                           ? Padding(
                               padding: EdgeInsets.symmetric(
                                   horizontal:
                                       MediaQuery.of(context).size.width / 5),
                               child: FilledButton(
-                                onPressed: () {},
+                                onPressed: cartProvider.loading ? null : () {
+                                  cartProvider.order();
+                                },
                                 style: FilledButton.styleFrom(
                                   minimumSize: Size(double.infinity, 40),
                                 ),
                                 child: HeaderText(
-                                  "Order",
+                                  "Order " + cartProvider.errors,
                                   fontSize: 20,
                                   color: AppColorScheme.background,
                                 ),
                               ),
                             )
-                          : CartItem()),
+                          : CartItem(index: index - 1)),
                 )
               ],
             ),
@@ -90,6 +98,9 @@ class CartBottomSheetHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
+    double total = cartProvider.total;
+
     return SingleChildScrollView(
       physics: const ClampingScrollPhysics(),
       controller: scrollController,
@@ -103,7 +114,8 @@ class CartBottomSheetHeader extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 PrimaryText("Total", 25),
-                PrimaryText("\$ 55.00", 25), //change to api value
+                PrimaryText("\$ " + total.toStringAsFixed(2), 25),
+                //change to api value
               ],
             ),
           ),
@@ -132,10 +144,26 @@ class BottomSheetDragHandle extends StatelessWidget {
 }
 
 class CartItem extends StatelessWidget {
-  const CartItem({super.key});
+  const CartItem({super.key, required this.index});
+
+  final int index;
 
   @override
   Widget build(BuildContext context) {
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
+    if (index >= cartProvider.cart.length)
+      return SizedBox(
+        width: 0,
+        height: 0,
+      );
+
+    Map product = cartProvider.cart[index];
+    String name = product["data"]['attributes']['name'];
+    String image = product["data"]['attributes']['image'];
+    String price = product["data"]['attributes']['price'];
+    int stock = product["data"]['attributes']['stock'];
+    int quantity = product["quantity"];
+
     return Stack(
       children: [
         Align(
@@ -151,12 +179,12 @@ class CartItem extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    PrimaryText("product Name like iphone 11", 15),
+                    PrimaryText(name, 15),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        PrimaryText("\$ 65.00", 23),
+                        PrimaryText(price, 23),
                         SizedBox(
                           width: 17,
                         ),
@@ -166,13 +194,19 @@ class CartItem extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    cartProvider.setQuantity(
+                                        product, quantity - 1);
+                                  },
                                   color: AppColorScheme.primary,
                                   icon: Icon(Icons.remove),
                                 ),
-                                PrimaryText("5", 20),
+                                PrimaryText("$quantity", 20),
                                 IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    cartProvider.setQuantity(
+                                        product, quantity + 1);
+                                  },
                                   color: AppColorScheme.primary,
                                   icon: Icon(Icons.add),
                                 ),
@@ -185,7 +219,7 @@ class CartItem extends StatelessWidget {
                                   style:
                                       TextStyle(color: AppColorScheme.primary)),
                               TextSpan(
-                                  text: "1000",
+                                  text: "$stock",
                                   style: TextStyle(
                                       color: AppColorScheme.secondary)),
                             ])),
@@ -204,7 +238,9 @@ class CartItem extends StatelessWidget {
                     ),
                   ),
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      cartProvider.removeFromCart(product);
+                    },
                     icon: Icon(Icons.close),
                     color: AppColorScheme.primarySurface,
                     style: IconButton.styleFrom(
@@ -221,7 +257,7 @@ class CartItem extends StatelessWidget {
           heightFactor: 1,
           widthFactor: 1.2,
           child: Image.network(
-            "https://placehold.co/400x300.png",
+            image,
             scale: 3.5,
             isAntiAlias: false,
           ),

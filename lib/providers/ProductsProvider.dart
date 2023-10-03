@@ -1,31 +1,31 @@
 import 'dart:convert';
 import 'package:ecommerce/common/Api.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductsProvider extends ChangeNotifier {
   late int id;
   Map<String, dynamic>? products;
+  Map<String, dynamic>? product;
   Map<String, dynamic> categorizedProducts = {};
   Map<String, dynamic> result = {};
   String errors = '';
   bool loading = true;
 
-  void startLoading() {
+  void startLoading({bool notify = true}) {
     errors = '';
     loading = true;
-    notifyListeners();
+    notify ? notifyListeners() : null;
   }
 
-  void endLoading() {
+  void endLoading({bool notify = true}) {
     loading = false;
-    notifyListeners();
+    notify ? notifyListeners() : null;
   }
 
   void categorize(List categories) {
-    //print("$categories" + " " + categories.length.toString());
     startLoading();
     copy();
-    //print(products);
     if (categories.length == 0) {
       endLoading();
       return;
@@ -37,7 +37,6 @@ class ProductsProvider extends ChangeNotifier {
       }
     });
     elements.forEach((element) {
-      print(categorizedProducts["data"].indexOf(element) );
       categorizedProducts["data"].remove(element);
     });
     //categorizedProducts = {};
@@ -48,10 +47,11 @@ class ProductsProvider extends ChangeNotifier {
     categorizedProducts = jsonDecode(jsonEncode(products));
   }
 
-  Future<bool> getProducts() async {
-    startLoading();
+  Future<bool> initProducts() async {
+    startLoading(notify: false);
 
-    result = await Api().products();
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    result = await Api().products(sharedPreferences.getString("token")!);
     if (result.keys.last != "errors") {
       products = result;
       copy();
@@ -62,4 +62,43 @@ class ProductsProvider extends ChangeNotifier {
     endLoading();
     return false;
   }
+
+  Future<bool> getProducts() async {
+    startLoading();
+
+    bool rc = await initProducts();
+
+    endLoading();
+    return rc;
+  }
+
+  void setProduct(int id){
+    this.id = id;
+  }
+
+  Future<bool> initProduct() async {
+    startLoading(notify: false);
+
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    result = await Api().product(sharedPreferences.getString("token")!, id);
+    if (result.keys.last != "errors") {
+      product = result;
+      endLoading();
+      return true;
+    }
+
+    endLoading();
+    return false;
+
+  }
+
+  Future<bool> getProduct() async {
+    startLoading();
+
+    bool rc = await initProduct();
+
+    endLoading();
+    return rc;
+  }
+
 }

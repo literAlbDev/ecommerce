@@ -2,8 +2,10 @@ import 'package:ecommerce/common/AppColorScheme.dart';
 import 'package:ecommerce/common/CartBottomSheet.dart';
 import 'package:ecommerce/common/ProductCard.dart';
 import 'package:ecommerce/common/textwidgets.dart';
+import 'package:ecommerce/providers/CartProvider.dart';
 import 'package:ecommerce/providers/CategoryProvider.dart';
 import 'package:ecommerce/providers/ProductsProvider.dart';
+import 'package:ecommerce/providers/ThemeProvider.dart';
 import 'package:ecommerce/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,8 +21,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    Provider.of<ProductsProvider>(context, listen: false).getProducts();
-    Provider.of<CategoryProvider>(context, listen: false).getCategories();
+    Provider.of<ProductsProvider>(context, listen: false).initProducts();
+    Provider.of<CategoryProvider>(context, listen: false).initCategories();
+    Provider.of<CartProvider>(context, listen: false).loadFromLocal();
   }
 
   @override
@@ -28,6 +31,7 @@ class _HomePageState extends State<HomePage> {
     UserProvider userProvider = Provider.of<UserProvider>(context);
     ProductsProvider productsProvider = Provider.of<ProductsProvider>(context);
     CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context);
+    ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -38,10 +42,21 @@ class _HomePageState extends State<HomePage> {
             },
             icon: Icon(Icons.menu),
             iconSize: 35,
-            color: Colors.black,
           );
         }),
         actions: [
+          IconButton(
+            onPressed: () {
+              if(themeProvider.theme == 'light')
+                themeProvider.setTheme("dark");
+              if(themeProvider.theme == 'dark')
+                themeProvider.setTheme("light");
+            },
+            icon: Icon(themeProvider.theme == 'light'
+                ? Icons.light_mode_outlined
+                : Icons.dark_mode_outlined),
+            iconSize: 35,
+          ),
           IconButton(
             onPressed: () {
               productsProvider.getProducts();
@@ -49,7 +64,6 @@ class _HomePageState extends State<HomePage> {
             },
             icon: Icon(Icons.refresh),
             iconSize: 35,
-            color: Colors.black,
           ),
           IconButton(
             onPressed: () {
@@ -59,7 +73,6 @@ class _HomePageState extends State<HomePage> {
             },
             icon: Icon(Icons.logout),
             iconSize: 35,
-            color: Colors.black,
           ),
         ],
         bottom: PreferredSize(

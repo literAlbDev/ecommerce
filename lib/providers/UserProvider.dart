@@ -30,8 +30,7 @@ class UserProvider extends ChangeNotifier {
 
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     result = await Api().me(sharedPreferences.getString("token")!);
-    print(result);
-    if (result.keys.last != "errors") {
+    if (result.keys.last != "errors" && result.keys.last != "message" ) {
       user = result;
       endLoading();
       return true;
@@ -41,10 +40,24 @@ class UserProvider extends ChangeNotifier {
     return false;
   }
 
+  Future<bool> checkLoggedIn() async {
+    startLoading();
+
+    bool rc = await getMe();
+    if (!rc || user!.isEmpty) {
+      endLoading();
+      return false;
+    }
+
+    endLoading();
+    return true;
+  }
+
   Future<bool> login(String email, String password) async {
     startLoading();
 
     result = await Api().login(email, password);
+    print("LOGIN: " + result.toString());
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     if (result.keys.last != "errors") {
       sharedPreferences.setString("token", result['token']);
