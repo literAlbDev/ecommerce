@@ -10,6 +10,7 @@ import 'package:ecommerce/providers/CartProvider.dart';
 import 'package:ecommerce/providers/CategoryProvider.dart';
 import 'package:ecommerce/providers/OrdersProvider.dart';
 import 'package:ecommerce/providers/ProductsProvider.dart';
+import 'package:ecommerce/providers/ReviewProvider.dart';
 import 'package:ecommerce/providers/ThemeProvider.dart';
 import 'package:ecommerce/providers/UserProvider.dart';
 import 'package:ecommerce/providers/WishListProvieder.dart';
@@ -25,6 +26,7 @@ void main() {
       ChangeNotifierProvider(create: (_) => WishListProvider()),
       ChangeNotifierProvider(create: (_) => CartProvider()),
       ChangeNotifierProvider(create: (_) => OrdersProvider()),
+      ChangeNotifierProvider(create: (_) => ReviewProvider()),
       ChangeNotifierProvider(create: (_) => ThemeProvider()),
     ],
     child: const MyApp(),

@@ -264,7 +264,6 @@ class Api {
       'Authorization': "Bearer $token",
     });
 
-
     http.Response response;
     try {
       response = await http.get(
@@ -288,7 +287,6 @@ class Api {
       'Authorization': "Bearer $token",
     });
 
-
     http.Response response;
     try {
       response = await http.get(
@@ -311,7 +309,6 @@ class Api {
     headersWithToken.addAll({
       'Authorization': "Bearer $token",
     });
-
 
     http.Response response;
     try {
@@ -444,6 +441,63 @@ class Api {
         headers: headersWithToken,
       );
 
+      statusCode = response.statusCode;
+
+      result = jsonDecode(response.body);
+    } on Exception {
+      result = errorMessage;
+    }
+
+    return result;
+  }
+
+  Future<dynamic> addReview(String token, int productId, String review, int rate) async {
+    var url = Uri.parse(baseUrl + "/products/reviews");
+    Map<String, String> headersWithToken = headers;
+    headersWithToken.addAll({
+      'Authorization': "Bearer $token",
+    });
+    String request = jsonEncode({
+      "product_id": productId,
+      "review": review,
+      "rating": rate,
+    });
+
+    http.Response response;
+    try {
+      response = await http.post(
+        url,
+        headers: headersWithToken,
+        body: request,
+      );
+      statusCode = response.statusCode;
+
+      result = jsonDecode(response.body);
+    } on Exception {
+      result = errorMessage;
+    }
+
+    return result;
+  }
+
+  Future<dynamic> updateReview(String token, int id, String review, int rate) async {
+    var url = Uri.parse(baseUrl + "/products/reviews/$id");
+    Map<String, String> headersWithToken = headers;
+    headersWithToken.addAll({
+      'Authorization': "Bearer $token",
+    });
+    String request = jsonEncode({
+      "review": review,
+      "rating": rate,
+    });
+
+    http.Response response;
+    try {
+      response = await http.put(
+        url,
+        headers: headersWithToken,
+        body: request,
+      );
       statusCode = response.statusCode;
 
       result = jsonDecode(response.body);

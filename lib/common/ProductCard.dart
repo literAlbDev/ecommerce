@@ -23,7 +23,7 @@ class ProductCard extends StatelessWidget {
       for (Map r in revs) {
         rate += r["attributes"]["rating"] as int;
       }
-      rate = rate / len as int;
+      rate = (rate / len).round();
     }
 
     return rate;
